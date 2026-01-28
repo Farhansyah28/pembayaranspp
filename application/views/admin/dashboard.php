@@ -12,7 +12,7 @@
             </div>
             <div class="flex-shrink-0 ml-3">
                 <span class="text-2xl font-bold leading-none text-gray-900 dark:text-white"><?= $total_santri ?></span>
-                <h3 class="text-base font-normal text-gray-500 dark:text-gray-400">Total Santri</h3>
+                <h3 class="text-base font-normal text-gray-500 dark:text-gray-400">Total Santriii</h3>
             </div>
         </div>
     </div>
