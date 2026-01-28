@@ -27,7 +27,10 @@
             <li><strong>Username Wali</strong> akan otomatis menggunakan Nomor HP Wali.</li>
             <li><strong>Password Wali</strong> akan otomatis menggunakan Tanggal Lahir Santri (Format: <code
                     class="bg-gray-100 px-1 rounded">DDMMYYYY</code>, contoh: 30012010).</li>
-            <li>Pastikan <strong>Nama Kelas</strong> sama persis dengan yang ada di sistem (contoh: Kelas 1 SMP).</li>
+            <li>Petunjuk: <strong>Nama Kelas</strong> dan <strong>Alamat</strong> sekarang bersifat opsional (boleh
+                kosong).</li>
+            <li>Jika <strong>Nama Kelas</strong> diisi, pastikan sama persis dengan yang ada di sistem (contoh: Kelas 1
+                SMP). Jika dikosongkan, santri akan tetap masuk namun belum memiliki kelas.</li>
             <li>Kolom <strong>Tahun Masuk</strong> diisi angka tahun (contoh: 2024). Sistem akan otomatis membuat data
                 Angkatan jika belum ada.</li>
             <li>Jenis Kelamin diisi <code class="bg-gray-100 px-1 rounded">L</code> untuk Laki-laki dan <code

@@ -101,18 +101,19 @@ class Import extends MY_Controller
                 'alamat' => trim($row[8])
             ];
 
-            // Validasi data wajib: NIS, Nama, Kelas, No HP Wali
-            if (empty($data['nis']) || empty($data['nama_santri']) || empty($data['nama_kelas']) || empty($data['no_hp_wali'])) {
+            // Validasi data wajib: NIS, Nama, No HP Wali (Nama Kelas & Alamat sekarang Opsional)
+            if (empty($data['nis']) || empty($data['nama_santri']) || empty($data['no_hp_wali'])) {
                 $skip_count++;
                 continue;
             }
 
             // 1. Get Kelas ID
-            $kelas = $this->db->where('nama', $data['nama_kelas'])->get('kelas')->row();
-            if (!$kelas) {
-                // Jangan rollback, cukup skip baris ini jika kelas tidak ditemukan
-                $skip_count++;
-                continue;
+            $kelas_id = NULL;
+            if (!empty($data['nama_kelas'])) {
+                $kelas = $this->db->where('nama', $data['nama_kelas'])->get('kelas')->row();
+                if ($kelas) {
+                    $kelas_id = $kelas->id;
+                }
             }
 
             // 2. Get or Create Angkatan ID
@@ -150,7 +151,7 @@ class Import extends MY_Controller
                     'user_id' => $user_id,
                     'nama' => $data['nama_wali'],
                     'no_hp' => $data['no_hp_wali'],
-                    'alamat' => $data['alamat']
+                    'alamat' => !empty($data['alamat']) ? $data['alamat'] : NULL
                 ];
                 $this->db->insert('wali_santri', $wali_data);
             } else {
@@ -161,7 +162,7 @@ class Import extends MY_Controller
             $santri_data = [
                 'nis' => $data['nis'],
                 'nama' => $data['nama_santri'],
-                'kelas_id' => $kelas->id,
+                'kelas_id' => $kelas_id,
                 'angkatan_id' => $angkatan_id,
                 'wali_user_id' => $user_id,
                 'jenis_kelamin' => $data['jenis_kelamin'],
