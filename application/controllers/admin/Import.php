@@ -25,13 +25,12 @@ class Import extends MY_Controller
 
         $output = fopen('php://output', 'w');
 
-        // Headers
+        // Headers (Tanpa Kelas)
         fputcsv($output, [
             'nis',
             'nama_santri',
             'jenis_kelamin',
             'tanggal_lahir',
-            'nama_kelas',
             'tahun_masuk',
             'nama_wali',
             'no_hp_wali',
@@ -44,7 +43,6 @@ class Import extends MY_Controller
             'Budi Santoso',
             'L',
             '2010-01-30',
-            'Kelas 1 SMP',
             '2024',
             'Agus Santoso',
             '08123456789',
@@ -83,8 +81,8 @@ class Import extends MY_Controller
         $skip_count = 0;
 
         while (($row = fgetcsv($handle, 0, ';')) !== FALSE) {
-            // Skip baris kosong atau tidak lengkap kolomnya
-            if (empty($row) || count($row) < 9) {
+            // Skip baris kosong atau tidak lengkap kolomnya (Minimal 8 kolom sekarang)
+            if (empty($row) || count($row) < 8) {
                 $skip_count++;
                 continue;
             }
@@ -107,29 +105,19 @@ class Import extends MY_Controller
                 'nama_santri' => trim($row[1]),
                 'jenis_kelamin' => trim($row[2]),
                 'tanggal_lahir' => $tgl_lahir,
-                'nama_kelas' => trim($row[4]),
-                'tahun_masuk' => trim($row[5]),
-                'nama_wali' => trim($row[6]),
-                'no_hp_wali' => trim($row[7]),
-                'alamat' => trim($row[8])
+                'tahun_masuk' => trim($row[4]),
+                'nama_wali' => trim($row[5]),
+                'no_hp_wali' => trim($row[6]),
+                'alamat' => trim($row[7])
             ];
 
-            // Validasi data wajib: NIS, Nama, No HP Wali (Nama Kelas & Alamat sekarang Opsional)
+            // Validasi data wajib: NIS, Nama, No HP Wali (Alamat Opsional)
             if (empty($data['nis']) || empty($data['nama_santri']) || empty($data['no_hp_wali'])) {
                 $skip_count++;
                 continue;
             }
 
-            // 1. Get Kelas ID
-            $kelas_id = NULL;
-            if (!empty($data['nama_kelas'])) {
-                $kelas = $this->db->where('nama', $data['nama_kelas'])->get('kelas')->row();
-                if ($kelas) {
-                    $kelas_id = $kelas->id;
-                }
-            }
-
-            // 2. Get or Create Angkatan ID
+            // 1. Get or Create Angkatan ID
             $angkatan = $this->db->where('tahun_masuk', $data['tahun_masuk'])->get('angkatan')->row();
             if (!$angkatan) {
                 $next_index = $this->db->count_all('angkatan') + 1;
@@ -144,7 +132,7 @@ class Import extends MY_Controller
                 $angkatan_id = $angkatan->id;
             }
 
-            // 3. Create/Get User Wali
+            // 2. Create/Get User Wali
             $password_raw = !empty($data['tanggal_lahir']) ? date('dmY', strtotime($data['tanggal_lahir'])) : '123456';
             $username_wali = $data['no_hp_wali'];
 
@@ -171,7 +159,7 @@ class Import extends MY_Controller
                 $user_id = $user->id;
             }
 
-            // 4. Create/Get User Santri
+            // 3. Create/Get User Santri
             $username_santri = $data['nis'];
             $user_santri = $this->db->where('username', $username_santri)->get('users')->row();
             if (!$user_santri) {
@@ -187,12 +175,11 @@ class Import extends MY_Controller
                 $santri_user_id = $user_santri->id;
             }
 
-            // 5. Create Santri
+            // 4. Create Santri (Tanpa Kelas)
             $santri_data = [
                 'nis' => $data['nis'],
                 'nama' => $data['nama_santri'],
                 'user_id' => $santri_user_id,
-                'kelas_id' => $kelas_id,
                 'angkatan_id' => $angkatan_id,
                 'wali_user_id' => $user_id,
                 'jenis_kelamin' => $data['jenis_kelamin'],

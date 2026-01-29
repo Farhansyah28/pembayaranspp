@@ -17,19 +17,35 @@
 
 <!-- Filter -->
 <div class="p-4 mb-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
-    <form action="<?= base_url('keuangan/laporan/monitoring') ?>" method="GET" class="flex items-end gap-4">
-        <div class="w-64">
-            <label for="tahun_ajaran_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Pilih
-                Tahun Ajaran</label>
+    <form action="<?= base_url('keuangan/laporan/monitoring') ?>" method="GET" class="flex flex-wrap items-end gap-4">
+        <div class="w-full md:w-48">
+            <label for="tahun_ajaran_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tahun
+                Ajaran</label>
             <select name="tahun_ajaran_id" id="tahun_ajaran_id"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
                 <?php foreach ($tahun_ajaran_list as $ta): ?>
                     <option value="<?= $ta->id ?>" <?= ($ta_selected && $ta_selected->id == $ta->id) ? 'selected' : '' ?>>
                         <?= $ta->nama ?>
-                        <?= $ta->aktif ? '(Aktif)' : '' ?>
                     </option>
                 <?php endforeach; ?>
             </select>
+        </div>
+        <div class="w-full md:w-48">
+            <label for="angkatan_id"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Angkatan</label>
+            <select name="angkatan_id" id="angkatan_id"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
+                <option value="">Semua Angkatan</option>
+                <?php foreach ($angkatan_list as $a): ?>
+                    <option value="<?= $a->id ?>" <?= ($angkatan_id == $a->id) ? 'selected' : '' ?>><?= $a->nama ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="w-full md:w-64">
+            <label for="search" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Cari
+                Nama/NIS</label>
+            <input type="text" name="search" id="search" value="<?= $search ?>" placeholder="Ketik nama atau nis..."
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
         </div>
         <button type="submit"
             class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
@@ -73,7 +89,7 @@
                     <th scope="col"
                         class="px-4 py-3 text-left sticky left-0 bg-gray-50 dark:bg-gray-700 z-10 w-48 shadow-[1px_0_0_0_rgba(0,0,0,0.1)]">
                         Nama Santri</th>
-                    <th scope="col" class="px-4 py-3 whitespace-nowrap">Kelas</th>
+                    <th scope="col" class="px-4 py-3 whitespace-nowrap">Angkatan</th>
                     <?php foreach ($months as $m): ?>
                         <th scope="col" class="px-2 py-3 whitespace-nowrap">
                             <?= date('M y', mktime(0, 0, 0, $m['bulan'], 10, $m['tahun'])) ?>
@@ -92,7 +108,7 @@
                             </p>
                         </td>
                         <td class="px-4 py-4 whitespace-nowrap">
-                            <?= $s['kelas_nama'] ?>
+                            <?= $s['angkatan_nama'] ?>
                         </td>
                         <?php foreach ($months as $mn): ?>
                             <?php
@@ -119,5 +135,15 @@
                 <?php endforeach; ?>
             </tbody>
         </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="mt-4 flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0">
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+            Menampilkan <span class="font-bold"><?= count($santri) ?></span> data santri.
+        </p>
+        <nav aria-label="Table navigation">
+            <?= $pagination ?>
+        </nav>
     </div>
 <?php endif; ?>

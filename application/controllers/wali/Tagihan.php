@@ -15,9 +15,11 @@ class Tagihan extends MY_Controller
         $data['title'] = 'Tagihan SPP';
 
         // Get all tagihan for children of this wali
-        $this->db->select('tagihan_spp.*, santri.nama as santri_nama, santri.nis');
+        $this->db->select('tagihan_spp.*, santri.nama as santri_nama, santri.nis, pembayaran.id as verified_pembayaran_id, bukti_transfer.status as bukti_status');
         $this->db->from('tagihan_spp');
         $this->db->join('santri', 'santri.id = tagihan_spp.santri_id');
+        $this->db->join('pembayaran', 'pembayaran.tagihan_id = tagihan_spp.id AND pembayaran.status = \'VERIFIED\'', 'left');
+        $this->db->join('bukti_transfer', 'bukti_transfer.pembayaran_id = tagihan_spp.id AND bukti_transfer.status = \'PENDING\'', 'left');
         $this->db->where('santri.wali_user_id', $this->session->userdata('user_id'));
         $this->db->order_by('tagihan_spp.bulan', 'DESC');
         $data['tagihan'] = $this->db->get()->result();
@@ -84,5 +86,34 @@ class Tagihan extends MY_Controller
             $this->session->set_flashdata('success', 'Bukti transfer berhasil diupload. Silakan tunggu verifikasi admin.');
             redirect('wali/tagihan');
         }
+    }
+
+    public function kwitansi($pembayaran_id)
+    {
+        // Security check: Ensure this payment belongs to the current wali's child
+        $this->db->select('pembayaran.*, tagihan_spp.bulan, tagihan_spp.tahun, tagihan_spp.nominal_akhir, santri.nama as santri_nama, santri.nis, angkatan.nama as angkatan_nama, users.username as admin_nama');
+        $this->db->from('pembayaran');
+        $this->db->join('tagihan_spp', 'tagihan_spp.id = pembayaran.tagihan_id');
+        $this->db->join('santri', 'santri.id = tagihan_spp.santri_id');
+        $this->db->join('angkatan', 'angkatan.id = santri.angkatan_id', 'left');
+        $this->db->join('users', 'users.id = pembayaran.admin_id', 'left');
+        $this->db->where('pembayaran.id', $pembayaran_id);
+        $this->db->where('santri.wali_user_id', $this->session->userdata('user_id'));
+        $data['p'] = $this->db->get()->row();
+
+        if (!$data['p']) {
+            $this->session->set_flashdata('error', 'Kwitansi tidak ditemukan atau Anda tidak memiliki akses.');
+            redirect('wali/tagihan');
+        }
+
+        // Get total paid for this tagihan to calculate remaining
+        $data['total_bayar'] = $this->db->select_sum('jumlah')
+            ->where([
+                'tagihan_id' => $data['p']->tagihan_id,
+                'status' => 'VERIFIED'
+            ])->get('pembayaran')->row()->jumlah;
+
+        $data['settings'] = $this->settings;
+        $this->load->view('keuangan/pembayaran/nota', $data);
     }
 }

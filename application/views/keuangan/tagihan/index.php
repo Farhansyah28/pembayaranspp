@@ -1,16 +1,15 @@
 <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 mb-4">
     <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Data Tagihan SPP</h2>
     <a href="<?= base_url('keuangan/tagihan/generate') ?>"
-        class="text-white bg-primary-700 hover:bg-primary-800 font-medium rounded-lg text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700">
+        class="text-white bg-primary-700 hover:bg-primary-800 font-medium rounded-lg text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 confirm-action"
+        data-title="Generate Tagihan?"
+        data-text="Sistem akan membuat tagihan SPP untuk semua santri aktif di bulan ini."
+        data-confirm-text="Ya, Generate!" data-icon="info">
         Generate Tagihan Baru
     </a>
 </div>
 
-<?php if ($this->session->flashdata('success')): ?>
-    <div class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
-        <?= $this->session->flashdata('success') ?>
-    </div>
-<?php endif; ?>
+</div>
 
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
     <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -18,10 +17,9 @@
             <tr>
                 <th scope="col" class="px-6 py-3">Bulan/Tahun</th>
                 <th scope="col" class="px-6 py-3">Nama Santri</th>
-                <th scope="col" class="px-6 py-3">Kelas</th>
                 <th scope="col" class="px-6 py-3">Nominal Akhir</th>
                 <th scope="col" class="px-6 py-3">Status</th>
-                <th scope="col" class="px-6 py-3">Aksi</th>
+                <th scope="col" class="px-6 py-3 text-center">Aksi</th>
             </tr>
         </thead>
         <tbody>
@@ -32,11 +30,7 @@
                         <?= $t->tahun ?>
                     </td>
                     <td class="px-6 py-4">
-                        <?= $t->santri_nama ?> (
-                        <?= $t->nis ?>)
-                    </td>
-                    <td class="px-6 py-4">
-                        <?= $t->kelas_nama ?>
+                        <?= $t->santri_nama ?> (<?= $t->nis ?>)
                     </td>
                     <td class="px-6 py-4">Rp
                         <?= number_format($t->nominal_akhir, 0, ',', '.') ?>

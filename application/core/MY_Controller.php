@@ -21,19 +21,23 @@ class MY_Controller extends CI_Controller
     {
         parent::__construct();
 
-        // Load dynamic settings
-        $settings_raw = $this->db->get('pengaturan')->result();
-        $this->settings = new stdClass();
+        // Load dynamic settings (Optimized with Session Cache)
+        if (!$this->session->userdata('app_settings')) {
+            $settings_raw = $this->db->get('pengaturan')->result();
+            $settings_obj = new stdClass();
 
-        // Default values
-        $this->settings->nama_pesantren = 'Pesantren Digital';
-        $this->settings->alamat_pesantren = '-';
-        $this->settings->telepon_pesantren = '-';
-        $this->settings->logo_pesantren = 'logo.png';
+            // Default values
+            $settings_obj->nama_pesantren = 'Pesantren Digital';
+            $settings_obj->alamat_pesantren = '-';
+            $settings_obj->telepon_pesantren = '-';
+            $settings_obj->logo_pesantren = 'logo.png';
 
-        foreach ($settings_raw as $s) {
-            $this->settings->{$s->h_key} = $s->h_value;
+            foreach ($settings_raw as $s) {
+                $settings_obj->{$s->h_key} = $s->h_value;
+            }
+            $this->session->set_userdata('app_settings', $settings_obj);
         }
+        $this->settings = $this->session->userdata('app_settings');
 
         // Security Headers
         header('X-Frame-Options: SAMEORIGIN');

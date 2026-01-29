@@ -120,16 +120,20 @@ class Pembayaran extends MY_Controller
 
     public function detail($tagihan_id)
     {
-        $this->db->select('tagihan_spp.*, santri.nama as santri_nama, santri.nis, kelas.nama as kelas_nama, angkatan.nama as angkatan_nama');
+        $this->db->select('tagihan_spp.*, santri.nama as santri_nama, santri.nis, angkatan.nama as angkatan_nama');
         $this->db->from('tagihan_spp');
         $this->db->join('santri', 'santri.id = tagihan_spp.santri_id');
-        $this->db->join('kelas', 'kelas.id = santri.kelas_id');
-        $this->db->join('angkatan', 'angkatan.id = santri.angkatan_id');
+        $this->db->join('angkatan', 'angkatan.id = santri.angkatan_id', 'left');
         $this->db->where('tagihan_spp.id', $tagihan_id);
         $data['tagihan'] = $this->db->get()->row();
 
         if (!$data['tagihan'])
             show_404();
+
+        // Calculate total already paid
+        $data['tagihan']->jumlah_dibayar = $this->db->select_sum('jumlah')
+            ->where(['tagihan_id' => $tagihan_id, 'status' => 'VERIFIED'])
+            ->get('pembayaran')->row()->jumlah ?? 0;
 
         $data['title'] = 'Detail Tagihan & Pembayaran';
 
@@ -146,11 +150,11 @@ class Pembayaran extends MY_Controller
 
     public function nota($pembayaran_id)
     {
-        $this->db->select('pembayaran.*, tagihan_spp.bulan, tagihan_spp.tahun, tagihan_spp.nominal_akhir, santri.nama as santri_nama, santri.nis, kelas.nama as kelas_nama, users.username as admin_nama');
+        $this->db->select('pembayaran.*, tagihan_spp.bulan, tagihan_spp.tahun, tagihan_spp.nominal_akhir, santri.nama as santri_nama, santri.nis, angkatan.nama as angkatan_nama, users.username as admin_nama');
         $this->db->from('pembayaran');
         $this->db->join('tagihan_spp', 'tagihan_spp.id = pembayaran.tagihan_id');
         $this->db->join('santri', 'santri.id = tagihan_spp.santri_id');
-        $this->db->join('kelas', 'kelas.id = santri.kelas_id');
+        $this->db->join('angkatan', 'angkatan.id = santri.angkatan_id', 'left');
         $this->db->join('users', 'users.id = pembayaran.admin_id', 'left');
         $this->db->where('pembayaran.id', $pembayaran_id);
         $data['p'] = $this->db->get()->row();

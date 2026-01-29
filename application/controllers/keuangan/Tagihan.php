@@ -14,10 +14,9 @@ class Tagihan extends MY_Controller
     public function index()
     {
         $data['title'] = 'Data Tagihan SPP';
-        $this->db->select('tagihan_spp.*, santri.nama as santri_nama, santri.nis, kelas.nama as kelas_nama');
+        $this->db->select('tagihan_spp.*, santri.nama as santri_nama, santri.nis');
         $this->db->from('tagihan_spp');
         $this->db->join('santri', 'santri.id = tagihan_spp.santri_id');
-        $this->db->join('kelas', 'kelas.id = santri.kelas_id');
         $this->db->where_in('tagihan_spp.status', ['BELUM_BAYAR', 'CICILAN']);
         $this->db->order_by('tagihan_spp.created_at', 'DESC');
         $data['tagihan'] = $this->db->get()->result();
@@ -44,13 +43,11 @@ class Tagihan extends MY_Controller
         }
 
         // 1. Ambil data santri yang BELUM punya tagihan di bulan/tahun ini
-        // Serta join dengan tarif dan keringanan aktif dalam SATU QUERY
+        // Serta join dengan tarif (Hanya Berdasarkan Tahun Ajaran - GLOBAL)
         $this->db->select('s.id as santri_id, tr.nominal as tarif_awal, k.id as keringanan_id, k.tipe as k_tipe, k.nilai as k_nilai');
         $this->db->from('santri s');
-        $this->db->join('kelas kls', 'kls.id = s.kelas_id');
-        $this->db->join('tarif_spp tr', 'tr.jenjang_id = kls.jenjang_id AND tr.tahun_ajaran_id = ' . $tahun_ajaran->id);
+        $this->db->join('tarif_spp tr', 'tr.tahun_ajaran_id = ' . $tahun_ajaran->id);
         $this->db->join('keringanan_spp k', 'k.santri_id = s.id AND k.aktif = 1', 'left');
-        // Left join untuk cek existensi tagihan
         $this->db->join('tagihan_spp t', "t.santri_id = s.id AND t.bulan = $bulan AND t.tahun = $tahun", 'left');
 
         $this->db->where('s.status', 'ACTIVE');

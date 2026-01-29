@@ -45,6 +45,9 @@ class Pengaturan extends MY_Controller
             }
         }
 
+        // Clear Settings Cache
+        $this->session->unset_userdata('app_settings');
+
         $this->log_activity("Memperbarui pengaturan branding pesantren", 'Pengaturan');
         $this->session->set_flashdata('success', 'Pengaturan berhasil diperbarui.');
         redirect('admin/pengaturan');

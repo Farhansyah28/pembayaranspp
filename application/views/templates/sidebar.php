@@ -116,14 +116,6 @@
                                 Ajaran</a>
                         </li>
                         <li>
-                            <a href="<?= base_url('admin/master/jenjang') ?>"
-                                class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Jenjang</a>
-                        </li>
-                        <li>
-                            <a href="<?= base_url('admin/master/kelas') ?>"
-                                class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Kelas</a>
-                        </li>
-                        <li>
                             <a href="<?= base_url('admin/master/angkatan') ?>"
                                 class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Angkatan</a>
                         </li>
@@ -202,11 +194,18 @@
                             aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                             <path
                                 d="M18.435 7.426c-.175-.308-.453-.541-.784-.65l-5.716-1.89-1.393-5.833C10.453.308 10.233 0 10 0c-.233 0-.453.308-.541.65l-1.393 5.833L2.349 6.776c-.331.11-.609.342-.784.65-.175.308-.216.66-.118.987l1.734 5.76-4.524 4.192c-.22.203-.312.508-.242.793.07.284.288.514.569.601L8.35 20c.541.168 1.107.252 1.65.252s1.109-.084 1.65-.252l9.366-3.041c.281-.087.499-.317.569-.601.07-.285-.022-.59-.242-.793l-4.524-4.192 1.734-5.76c.098-.327.057-.679-.118-.987z" />
-                        </svg>
-                        <span class="ms-3">Keringanan SPP</span>
+                            <span class="ms-3">Keringanan SPP</span>
                     </a>
                 </li>
-                </a>
+                <li>
+                    <a href="<?= base_url('keuangan/pembayaran/pending') ?>"
+                        class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                        <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                            aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm5 11h-4v4h-2v-4H5v-2h4V5h2v4h4v2Z" />
+                        </svg>
+                        <span class="ms-3">Verifikasi Transfer</span>
+                    </a>
                 </li>
 
                 <li class="pt-4 pb-2">

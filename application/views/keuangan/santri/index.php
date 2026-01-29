@@ -17,11 +17,7 @@
     </div>
 </div>
 
-<?php if ($this->session->flashdata('success')): ?>
-    <div class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
-        <?= $this->session->flashdata('success') ?>
-    </div>
-<?php endif; ?>
+</div>
 
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
     <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -29,10 +25,10 @@
             <tr>
                 <th scope="col" class="px-6 py-3">NIS</th>
                 <th scope="col" class="px-6 py-3">Nama</th>
-                <th scope="col" class="px-6 py-3">Kelas</th>
                 <th scope="col" class="px-6 py-3">Angkatan</th>
                 <th scope="col" class="px-6 py-3">Wali</th>
-                <th scope="col" class="px-6 py-3">Status</th>
+                <th scope="col" class="px-6 py-3 text-center">Status</th>
+                <th scope="col" class="px-6 py-3 text-center">Aksi</th>
             </tr>
         </thead>
         <tbody>
@@ -45,9 +41,6 @@
                         <?= $s->nama ?>
                     </td>
                     <td class="px-6 py-4">
-                        <?= $s->kelas_nama ?>
-                    </td>
-                    <td class="px-6 py-4">
                         <?= $s->angkatan_nama ?>
                     </td>
                     <td class="px-6 py-4">
@@ -58,6 +51,22 @@
                             class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
                             <?= $s->status ?>
                         </span>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <div class="inline-flex space-x-2">
+                            <a href="<?= base_url('keuangan/santri/edit/' . $s->id) ?>"
+                                class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-xs px-3 py-1.5 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none"
+                                title="Edit Santri">
+                                Edit
+                            </a>
+                            <a href="<?= base_url('keuangan/santri/delete/' . $s->id) ?>"
+                                class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 dark:bg-red-500 dark:hover:bg-red-600 focus:outline-none confirm-action"
+                                data-title="Hapus Santri?"
+                                data-text="Menghapus santri akan menghapus data tagihan terkait. Tindakan ini permanen!"
+                                data-confirm-text="Ya, Hapus!" title="Hapus Santri">
+                                Hapus
+                            </a>
+                        </div>
                     </td>
                 </tr>
             <?php endforeach; ?>

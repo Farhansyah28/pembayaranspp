@@ -22,7 +22,6 @@
             <tr>
                 <th scope="col" class="px-6 py-3">NIS</th>
                 <th scope="col" class="px-6 py-3">Nama Santri</th>
-                <th scope="col" class="px-6 py-3">Kelas</th>
                 <th scope="col" class="px-6 py-3">Bulan Tagihan</th>
                 <th scope="col" class="px-6 py-3">Status</th>
                 <th scope="col" class="px-6 py-3">Sisa Tagihan</th>
@@ -44,9 +43,6 @@
                     </td>
                     <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">
                         <?= $t->santri_nama ?>
-                    </td>
-                    <td class="px-6 py-4">
-                        <?= $t->kelas_nama ?>
                     </td>
                     <td class="px-6 py-4">
                         <?= $bulan_nama ?>

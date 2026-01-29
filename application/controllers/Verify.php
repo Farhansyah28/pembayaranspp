@@ -31,11 +31,11 @@ class Verify extends CI_Controller
         }
 
         // Get Payment Data
-        $this->db->select('pembayaran.*, santri.nama as santri_nama, santri.nis, kelas.nama as kelas_nama, tagihan_spp.bulan, tagihan_spp.tahun');
+        $this->db->select('pembayaran.*, santri.nama as santri_nama, santri.nis, angkatan.nama as angkatan_nama, tagihan_spp.bulan, tagihan_spp.tahun');
         $this->db->from('pembayaran');
         $this->db->join('tagihan_spp', 'tagihan_spp.id = pembayaran.tagihan_id');
         $this->db->join('santri', 'santri.id = tagihan_spp.santri_id');
-        $this->db->join('kelas', 'kelas.id = santri.kelas_id');
+        $this->db->join('angkatan', 'angkatan.id = santri.angkatan_id', 'left');
         $this->db->where('pembayaran.id', $id);
         $this->db->where('pembayaran.status', 'VERIFIED');
         $data['p'] = $this->db->get()->row();

@@ -6,26 +6,16 @@
     </button>
 </div>
 
-<?php if ($this->session->flashdata('success')): ?>
-    <div class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
-        <?= $this->session->flashdata('success') ?>
-    </div>
-<?php endif; ?>
-
-<?php if ($this->session->flashdata('error')): ?>
-    <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
-        <?= $this->session->flashdata('error') ?>
-    </div>
-<?php endif; ?>
+</div>
 
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
     <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
                 <th scope="col" class="px-6 py-3">Tahun Ajaran</th>
-                <th scope="col" class="px-6 py-3">Jenjang</th>
                 <th scope="col" class="px-6 py-3">Nominal</th>
                 <th scope="col" class="px-6 py-3">Keterangan</th>
+                <th scope="col" class="px-6 py-3 text-center">Aksi</th>
             </tr>
         </thead>
         <tbody>
@@ -34,14 +24,17 @@
                     <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                         <?= $tr->tahun_ajaran_nama ?>
                     </td>
-                    <td class="px-6 py-4">
-                        <?= $tr->jenjang_nama ?>
-                    </td>
                     <td class="px-6 py-4">Rp
                         <?= number_format($tr->nominal, 0, ',', '.') ?>
                     </td>
                     <td class="px-6 py-4">
                         <?= $tr->keterangan ?>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <a href="<?= base_url('admin/master/tarif_delete/' . $tr->id) ?>"
+                            class="text-red-600 hover:text-red-900 dark:text-red-500 dark:hover:text-red-400 font-medium confirm-action"
+                            data-title="Hapus Tarif?" data-text="Tarif ini akan dihapus permanen!"
+                            data-confirm-text="Ya, Hapus!">Hapus</a>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -78,18 +71,6 @@
                             <?php foreach ($tahun_ajaran as $ta): ?>
                                 <option value="<?= $ta->id ?>">
                                     <?= $ta->nama ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div class="col-span-2">
-                        <label for="jenjang_id"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Jenjang</label>
-                        <select id="jenjang_id" name="jenjang_id"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
-                            <?php foreach ($jenjang as $j): ?>
-                                <option value="<?= $j->id ?>">
-                                    <?= $j->nama ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>

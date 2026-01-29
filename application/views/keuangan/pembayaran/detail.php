@@ -27,10 +27,9 @@
                     </p>
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Kelas / Angkatan</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Angkatan</p>
                     <p class="font-medium text-gray-900 dark:text-white">
-                        <?= $tagihan->kelas_nama ?> /
-                        <?= $tagihan->angkatan_nama ?>
+                        <?= $tagihan->angkatan_nama ?: '-' ?>
                     </p>
                 </div>
             </div>

@@ -6,11 +6,7 @@
     </button>
 </div>
 
-<?php if ($this->session->flashdata('success')): ?>
-    <div class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
-        <?= $this->session->flashdata('success') ?>
-    </div>
-<?php endif; ?>
+</div>
 
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
     <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -19,6 +15,7 @@
                 <th scope="col" class="px-6 py-3">Nama Angkatan</th>
                 <th scope="col" class="px-6 py-3">Tahun Masuk</th>
                 <th scope="col" class="px-6 py-3">Keterangan</th>
+                <th scope="col" class="px-6 py-3 text-center">Aksi</th>
             </tr>
         </thead>
         <tbody>
@@ -32,6 +29,12 @@
                     </td>
                     <td class="px-6 py-4">
                         <?= $a->keterangan ?>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <a href="<?= base_url('admin/master/angkatan_delete/' . $a->id) ?>"
+                            class="text-red-600 hover:text-red-900 dark:text-red-500 dark:hover:text-red-400 font-medium confirm-action"
+                            data-title="Hapus Angkatan?" data-text="Menghapus angkatan dapat memengaruhi data santri terkait!"
+                            data-confirm-text="Ya, Hapus!">Hapus</a>
                     </td>
                 </tr>
             <?php endforeach; ?>

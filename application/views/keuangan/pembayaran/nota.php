@@ -157,9 +157,9 @@
                 </td>
             </tr>
             <tr>
-                <th>Kelas</th>
+                <th>Angkatan</th>
                 <td>:
-                    <?= $p->kelas_nama ?>
+                    <?= $p->angkatan_nama ?: '-' ?>
                 </td>
             </tr>
             <tr>

@@ -51,70 +51,7 @@ class Master extends MY_Controller
         redirect('admin/master/tahun_ajaran');
     }
 
-    // ==========================================
-    // JENJANG
-    // ==========================================
-    public function jenjang()
-    {
-        $data['title'] = 'Master Jenjang';
-        $data['jenjang'] = $this->db->get('jenjang')->result();
-        $this->render('admin/master/jenjang', $data);
-    }
-
-    public function jenjang_store()
-    {
-        $this->form_validation->set_rules('nama', 'Nama', 'required|is_unique[jenjang.nama]');
-
-        if ($this->form_validation->run() === FALSE) {
-            $this->jenjang();
-        } else {
-            $data = [
-                'nama' => $this->input->post('nama'),
-                'keterangan' => $this->input->post('keterangan')
-            ];
-            $this->db->insert('jenjang', $data);
-            $this->session->set_flashdata('success', 'Jenjang berhasil ditambahkan.');
-            redirect('admin/master/jenjang');
-        }
-    }
-
-    // ==========================================
-    // KELAS
-    // ==========================================
-    public function kelas()
-    {
-        $data['title'] = 'Master Kelas';
-        $this->db->select('kelas.*, jenjang.nama as jenjang_nama');
-        $this->db->from('kelas');
-        $this->db->join('jenjang', 'jenjang.id = kelas.jenjang_id');
-        $data['kelas'] = $this->db->get()->result();
-        $data['jenjang'] = $this->db->get('jenjang')->result();
-        $this->render('admin/master/kelas', $data);
-    }
-
-    public function kelas_store()
-    {
-        $this->form_validation->set_rules('nama', 'Nama', 'required');
-        $this->form_validation->set_rules('jenjang_id', 'Jenjang', 'required');
-        $this->form_validation->set_rules('tingkat', 'Tingkat', 'required|numeric');
-
-        if ($this->form_validation->run() === FALSE) {
-            $this->kelas();
-        } else {
-            $data = [
-                'nama' => $this->input->post('nama'),
-                'jenjang_id' => $this->input->post('jenjang_id'),
-                'tingkat' => $this->input->post('tingkat')
-            ];
-            $this->db->insert('kelas', $data);
-            $this->session->set_flashdata('success', 'Kelas berhasil ditambahkan.');
-            redirect('admin/master/kelas');
-        }
-    }
-
-    // ==========================================
-    // ANGKATAN
-    // ==========================================
+    // TABEL ANGKATAN
     public function angkatan()
     {
         $data['title'] = 'Master Angkatan';
@@ -141,20 +78,16 @@ class Master extends MY_Controller
         }
     }
 
-    // ==========================================
-    // TARIF SPP
-    // ==========================================
+    // TARIF SPP (Berbasis Tahun Ajaran)
     public function tarif()
     {
         $data['title'] = 'Master Tarif SPP';
-        $this->db->select('tarif_spp.*, tahun_ajaran.nama as tahun_ajaran_nama, jenjang.nama as jenjang_nama');
+        $this->db->select('tarif_spp.*, tahun_ajaran.nama as tahun_ajaran_nama');
         $this->db->from('tarif_spp');
         $this->db->join('tahun_ajaran', 'tahun_ajaran.id = tarif_spp.tahun_ajaran_id');
-        $this->db->join('jenjang', 'jenjang.id = tarif_spp.jenjang_id');
         $data['tarif'] = $this->db->get()->result();
 
         $data['tahun_ajaran'] = $this->db->get('tahun_ajaran')->result();
-        $data['jenjang'] = $this->db->get('jenjang')->result();
 
         $this->render('admin/master/tarif', $data);
     }
@@ -162,7 +95,6 @@ class Master extends MY_Controller
     public function tarif_store()
     {
         $this->form_validation->set_rules('tahun_ajaran_id', 'Tahun Ajaran', 'required');
-        $this->form_validation->set_rules('jenjang_id', 'Jenjang', 'required');
         $this->form_validation->set_rules('nominal', 'Nominal', 'required|numeric');
 
         if ($this->form_validation->run() === FALSE) {
@@ -170,24 +102,43 @@ class Master extends MY_Controller
         } else {
             $data = [
                 'tahun_ajaran_id' => $this->input->post('tahun_ajaran_id'),
-                'jenjang_id' => $this->input->post('jenjang_id'),
                 'nominal' => $this->input->post('nominal'),
                 'keterangan' => $this->input->post('keterangan')
             ];
 
-            // Cek unique constraint tahun_ajaran & jenjang
+            // Cek unique constraint tahun_ajaran
             $exists = $this->db->where([
-                'tahun_ajaran_id' => $data['tahun_ajaran_id'],
-                'jenjang_id' => $data['jenjang_id']
+                'tahun_ajaran_id' => $data['tahun_ajaran_id']
             ])->get('tarif_spp')->row();
 
             if ($exists) {
-                $this->session->set_flashdata('error', 'Tarif untuk tahun ajaran dan jenjang tersebut sudah ada.');
+                $this->session->set_flashdata('error', 'Tarif untuk angkatan tersebut sudah ada.');
             } else {
                 $this->db->insert('tarif_spp', $data);
                 $this->session->set_flashdata('success', 'Tarif berhasil ditambahkan.');
             }
             redirect('admin/master/tarif');
         }
+    }
+
+    public function tahun_ajaran_delete($id)
+    {
+        $this->db->delete('tahun_ajaran', ['id' => $id]);
+        $this->session->set_flashdata('success', 'Tahun Ajaran berhasil dihapus.');
+        redirect('admin/master/tahun_ajaran');
+    }
+
+    public function angkatan_delete($id)
+    {
+        $this->db->delete('angkatan', ['id' => $id]);
+        $this->session->set_flashdata('success', 'Angkatan berhasil dihapus.');
+        redirect('admin/master/angkatan');
+    }
+
+    public function tarif_delete($id)
+    {
+        $this->db->delete('tarif_spp', ['id' => $id]);
+        $this->session->set_flashdata('success', 'Tarif berhasil dihapus.');
+        redirect('admin/master/tarif');
     }
 }
