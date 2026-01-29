@@ -1,0 +1,99 @@
+Array
+(
+    [Field] => id
+    [Type] => int unsigned
+    [Null] => NO
+    [Key] => PRI
+    [Default] => 
+    [Extra] => auto_increment
+)
+Array
+(
+    [Field] => tagihan_id
+    [Type] => int unsigned
+    [Null] => NO
+    [Key] => MUL
+    [Default] => 
+    [Extra] => 
+)
+Array
+(
+    [Field] => metode
+    [Type] => enum('CASH','TRANSFER')
+    [Null] => NO
+    [Key] => MUL
+    [Default] => 
+    [Extra] => 
+)
+Array
+(
+    [Field] => jumlah
+    [Type] => decimal(10,2)
+    [Null] => NO
+    [Key] => 
+    [Default] => 
+    [Extra] => 
+)
+Array
+(
+    [Field] => tanggal_bayar
+    [Type] => datetime
+    [Null] => NO
+    [Key] => MUL
+    [Default] => 
+    [Extra] => 
+)
+Array
+(
+    [Field] => status
+    [Type] => enum('PENDING','VERIFIED','REJECTED')
+    [Null] => YES
+    [Key] => MUL
+    [Default] => VERIFIED
+    [Extra] => 
+)
+Array
+(
+    [Field] => catatan
+    [Type] => text
+    [Null] => YES
+    [Key] => 
+    [Default] => 
+    [Extra] => 
+)
+Array
+(
+    [Field] => admin_id
+    [Type] => int unsigned
+    [Null] => NO
+    [Key] => MUL
+    [Default] => 
+    [Extra] => 
+)
+Array
+(
+    [Field] => verified_at
+    [Type] => datetime
+    [Null] => YES
+    [Key] => 
+    [Default] => 
+    [Extra] => 
+)
+Array
+(
+    [Field] => created_at
+    [Type] => timestamp
+    [Null] => YES
+    [Key] => 
+    [Default] => CURRENT_TIMESTAMP
+    [Extra] => DEFAULT_GENERATED
+)
+Array
+(
+    [Field] => updated_at
+    [Type] => timestamp
+    [Null] => YES
+    [Key] => 
+    [Default] => CURRENT_TIMESTAMP
+    [Extra] => DEFAULT_GENERATED on update CURRENT_TIMESTAMP
+)

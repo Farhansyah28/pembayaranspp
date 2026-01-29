@@ -58,23 +58,27 @@ class Xendit_callback extends CI_Controller
                     // 5. Insert to Pembayaran
                     $pembayaran_data = [
                         'tagihan_id' => $tagihan_id,
-                        'admin_id' => NULL, // Automated
+                        'admin_id' => NULL, // Automated (Allow NULL in Table)
                         'jumlah' => $amount,
                         'metode' => 'ONLINE (' . $payment_channel . ')',
                         'tanggal_bayar' => date('Y-m-d H:i:s'),
                         'status' => 'VERIFIED',
                         'catatan' => 'Pembayaran otomatis via Xendit'
                     ];
-                    $this->db->insert('pembayaran', $pembayaran_data);
+
+                    if (!$this->db->insert('pembayaran', $pembayaran_data)) {
+                        $error = $this->db->error();
+                        file_put_contents('./xendit_debug.txt', "[" . date('Y-m-d H:i:s') . "] DB Error Insert: " . json_encode($error) . "\n", FILE_APPEND);
+                    }
 
                     // 6. Update Tagihan Status
                     $total_bayar = $this->db->select_sum('jumlah')->where(['tagihan_id' => $tagihan_id, 'status' => 'VERIFIED'])->get('pembayaran')->row()->jumlah;
                     $new_status = ($total_bayar >= $tagihan->nominal_akhir) ? 'LUNAS' : 'CICILAN';
 
-                    $this->db->where('id', $tagihan_id)->update('tagihan_spp', [
-                        'status' => $new_status,
-                        'xendit_external_id' => $external_id
-                    ]);
+                    if (!$this->db->where('id', $tagihan_id)->update('tagihan_spp', ['status' => $new_status, 'xendit_external_id' => $external_id])) {
+                        $error = $this->db->error();
+                        file_put_contents('./xendit_debug.txt', "[" . date('Y-m-d H:i:s') . "] DB Error Update: " . json_encode($error) . "\n", FILE_APPEND);
+                    }
 
                     file_put_contents('./xendit_debug.txt', "[" . date('Y-m-d H:i:s') . "] Success: Status updated to $new_status\n", FILE_APPEND);
                 } else {
