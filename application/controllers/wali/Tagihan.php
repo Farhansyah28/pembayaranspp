@@ -122,6 +122,55 @@ class Tagihan extends MY_Controller
         $this->load->view('keuangan/pembayaran/nota', $data);
     }
 
+    public function bayar_online($tagihan_id)
+    {
+        $this->load->library('xendit_lib');
+
+        // 1. Get Tagihan Data
+        $this->db->select('tagihan_spp.*, santri.nama as santri_nama, users.email');
+        $this->db->from('tagihan_spp');
+        $this->db->join('santri', 'santri.id = tagihan_spp.santri_id');
+        $this->db->join('users', 'users.id = santri.wali_user_id');
+        $this->db->where('tagihan_spp.id', $tagihan_id);
+        $tagihan = $this->db->get()->row();
+
+        if (!$tagihan || $tagihan->status == 'LUNAS') {
+            $this->session->set_flashdata('error', 'Tagihan tidak ditemukan atau sudah lunas.');
+            redirect('wali/tagihan');
+        }
+
+        // 2. If already has a payment URL, redirect there
+        if ($tagihan->xendit_payment_url) {
+            redirect($tagihan->xendit_payment_url);
+        }
+
+        // 3. Create Xendit Invoice
+        $external_id = 'SPP-' . $tagihan_id . '-' . time();
+        $description = "Pembayaran SPP - " . $tagihan->santri_nama . " (" . date('F Y', mktime(0, 0, 0, $tagihan->bulan, 10, $tagihan->tahun)) . ")";
+
+        $response = $this->xendit_lib->create_invoice(
+            $external_id,
+            $tagihan->nominal_akhir,
+            $tagihan->email ?: 'wali@pesantren.com',
+            $description
+        );
+
+        if ($response['status']) {
+            $invoice = $response['data'];
+
+            // Save info to database
+            $this->db->where('id', $tagihan_id)->update('tagihan_spp', [
+                'xendit_external_id' => $invoice['external_id'],
+                'xendit_payment_url' => $invoice['invoice_url']
+            ]);
+
+            redirect($invoice['invoice_url']);
+        } else {
+            $this->session->set_flashdata('error', 'Gagal membuat tagihan online: ' . $response['message']);
+            redirect('wali/tagihan');
+        }
+    }
+
     private function _compress_image($source_path)
     {
         $config['image_library'] = 'gd2';
