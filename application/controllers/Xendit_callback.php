@@ -32,47 +32,46 @@ class Xendit_callback extends CI_Controller
         }
 
         // 4. Handle Invoice Paid event
-        if ($payload['status'] === 'PAID') {
-            $external_id = $payload['external_id']; // Format: SPP-ID-TIME
+        if (isset($payload['status']) && $payload['status'] === 'PAID') {
+            $external_id = isset($payload['external_id']) ? $payload['external_id'] : '';
             $parts = explode('-', $external_id);
-            if (count($parts) < 2)
-                return;
 
-            $tagihan_id = $parts[1];
-            $amount = $payload['amount'];
-            $payment_method = $payload['payment_method'];
-            $payment_channel = $payload['payment_channel'];
+            if (count($parts) >= 2) {
+                $tagihan_id = $parts[1];
+                $amount = $payload['amount'];
+                $payment_channel = isset($payload['payment_channel']) ? $payload['payment_channel'] : 'XENDIT';
 
-            // Start Transaction
-            $this->db->trans_start();
+                // Start Transaction
+                $this->db->trans_start();
 
-            // Check if tagihan exists
-            $tagihan = $this->db->where('id', $tagihan_id)->get('tagihan_spp')->row();
-            if ($tagihan && $tagihan->status != 'LUNAS') {
+                // Check if tagihan exists
+                $tagihan = $this->db->where('id', $tagihan_id)->get('tagihan_spp')->row();
+                if ($tagihan && $tagihan->status != 'LUNAS') {
 
-                // 5. Insert to Pembayaran
-                $pembayaran_data = [
-                    'tagihan_id' => $tagihan_id,
-                    'admin_id' => NULL, // Automated
-                    'jumlah' => $amount,
-                    'metode' => 'ONLINE (' . $payment_channel . ')',
-                    'tanggal_bayar' => date('Y-m-d H:i:s'),
-                    'status' => 'VERIFIED',
-                    'catatan' => 'Pembayaran otomatis via Xendit'
-                ];
-                $this->db->insert('pembayaran', $pembayaran_data);
+                    // 5. Insert to Pembayaran
+                    $pembayaran_data = [
+                        'tagihan_id' => $tagihan_id,
+                        'admin_id' => NULL, // Automated
+                        'jumlah' => $amount,
+                        'metode' => 'ONLINE (' . $payment_channel . ')',
+                        'tanggal_bayar' => date('Y-m-d H:i:s'),
+                        'status' => 'VERIFIED',
+                        'catatan' => 'Pembayaran otomatis via Xendit'
+                    ];
+                    $this->db->insert('pembayaran', $pembayaran_data);
 
-                // 6. Update Tagihan Status
-                $total_bayar = $this->db->select_sum('jumlah')->where(['tagihan_id' => $tagihan_id, 'status' => 'VERIFIED'])->get('pembayaran')->row()->jumlah;
-                $new_status = ($total_bayar >= $tagihan->nominal_akhir) ? 'LUNAS' : 'CICILAN';
+                    // 6. Update Tagihan Status
+                    $total_bayar = $this->db->select_sum('jumlah')->where(['tagihan_id' => $tagihan_id, 'status' => 'VERIFIED'])->get('pembayaran')->row()->jumlah;
+                    $new_status = ($total_bayar >= $tagihan->nominal_akhir) ? 'LUNAS' : 'CICILAN';
 
-                $this->db->where('id', $tagihan_id)->update('tagihan_spp', [
-                    'status' => $new_status,
-                    'xendit_external_id' => $external_id // Ensure synced
-                ]);
+                    $this->db->where('id', $tagihan_id)->update('tagihan_spp', [
+                        'status' => $new_status,
+                        'xendit_external_id' => $external_id
+                    ]);
+                }
+
+                $this->db->trans_complete();
             }
-
-            $this->db->trans_complete();
         }
 
         echo 'Success';
