@@ -9,8 +9,11 @@ class Xendit_callback extends CI_Controller
         $settings = $this->db->where('h_key', 'xendit_callback_token')->get('pengaturan')->row();
         $xendit_token = $settings ? $settings->h_value : '';
 
-        // 2. Get headers
-        $received_token = $this->input->get_header('x-callback-token');
+        // 2. Get headers (More robust way for various server environments)
+        $received_token = $this->input->get_request_header('x-callback-token', TRUE);
+        if (!$received_token) {
+            $received_token = isset($_SERVER['HTTP_X_CALLBACK_TOKEN']) ? $_SERVER['HTTP_X_CALLBACK_TOKEN'] : '';
+        }
 
         if ($received_token !== $xendit_token) {
             header('HTTP/1.1 403 Forbidden');
