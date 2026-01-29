@@ -29,7 +29,7 @@ class Tagihan extends MY_Controller
 
     public function upload_bukti($tagihan_id)
     {
-        $tagihan = $this->db->get_where('tagihan_spp', ['id' => $tagihan_id])->row();
+        $tagihan = $this->db->where('id', $tagihan_id)->get('tagihan_spp')->row();
         if (!$tagihan)
             show_404();
 
@@ -56,6 +56,11 @@ class Tagihan extends MY_Controller
             redirect('wali/tagihan/upload_bukti/' . $tagihan_id);
         } else {
             $upload_data = $this->upload->data();
+
+            // Compress image if it's not a PDF
+            if ($upload_data['file_ext'] != '.pdf') {
+                $this->_compress_image($upload_data['full_path']);
+            }
 
             $this->db->trans_start();
 
@@ -115,5 +120,25 @@ class Tagihan extends MY_Controller
 
         $data['settings'] = $this->settings;
         $this->load->view('keuangan/pembayaran/nota', $data);
+    }
+
+    private function _compress_image($source_path)
+    {
+        $config['image_library'] = 'gd2';
+        $config['source_image'] = $source_path;
+        $config['create_thumb'] = FALSE;
+        $config['maintain_ratio'] = TRUE;
+        $config['width'] = 800;
+        $config['height'] = 800;
+        $config['quality'] = '70%';
+
+        $this->load->library('image_lib');
+        $this->image_lib->initialize($config);
+
+        if (!$this->image_lib->resize()) {
+            log_message('error', 'Image compression failed: ' . $this->image_lib->display_errors());
+        }
+
+        $this->image_lib->clear();
     }
 }
