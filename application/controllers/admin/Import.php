@@ -89,11 +89,24 @@ class Import extends MY_Controller
                 continue;
             }
 
+            // Normalize Tanggal Lahir (Handle DD/MM/YYYY or YYYY-MM-DD)
+            $raw_tgl = trim($row[3]);
+            $tgl_lahir = NULL;
+            if (!empty($raw_tgl)) {
+                $date_obj = date_create_from_format('d/m/Y', $raw_tgl);
+                if (!$date_obj) {
+                    $date_obj = date_create($raw_tgl);
+                }
+                if ($date_obj) {
+                    $tgl_lahir = $date_obj->format('Y-m-d');
+                }
+            }
+
             $data = [
                 'nis' => trim($row[0]),
                 'nama_santri' => trim($row[1]),
                 'jenis_kelamin' => trim($row[2]),
-                'tanggal_lahir' => trim($row[3]),
+                'tanggal_lahir' => $tgl_lahir,
                 'nama_kelas' => trim($row[4]),
                 'tahun_masuk' => trim($row[5]),
                 'nama_wali' => trim($row[6]),
@@ -132,7 +145,7 @@ class Import extends MY_Controller
             }
 
             // 3. Create/Get User Wali
-            $password_raw = date('dmY', strtotime($data['tanggal_lahir']));
+            $password_raw = !empty($data['tanggal_lahir']) ? date('dmY', strtotime($data['tanggal_lahir'])) : '123456';
             $username_wali = $data['no_hp_wali'];
 
             $user = $this->db->where('username', $username_wali)->get('users')->row();
@@ -158,10 +171,27 @@ class Import extends MY_Controller
                 $user_id = $user->id;
             }
 
-            // 4. Create Santri
+            // 4. Create/Get User Santri
+            $username_santri = $data['nis'];
+            $user_santri = $this->db->where('username', $username_santri)->get('users')->row();
+            if (!$user_santri) {
+                $user_santri_data = [
+                    'username' => $username_santri,
+                    'password' => password_hash($password_raw, PASSWORD_DEFAULT),
+                    'role' => 'SANTRI',
+                    'status' => 'ACTIVE'
+                ];
+                $this->db->insert('users', $user_santri_data);
+                $santri_user_id = $this->db->insert_id();
+            } else {
+                $santri_user_id = $user_santri->id;
+            }
+
+            // 5. Create Santri
             $santri_data = [
                 'nis' => $data['nis'],
                 'nama' => $data['nama_santri'],
+                'user_id' => $santri_user_id,
                 'kelas_id' => $kelas_id,
                 'angkatan_id' => $angkatan_id,
                 'wali_user_id' => $user_id,

@@ -15,9 +15,9 @@ class Santri extends MY_Controller
         $data['title'] = 'Manajemen Santri';
         $this->db->select('santri.*, kelas.nama as kelas_nama, angkatan.nama as angkatan_nama, wali_user.username as wali_username');
         $this->db->from('santri');
-        $this->db->join('kelas', 'kelas.id = santri.kelas_id');
-        $this->db->join('angkatan', 'angkatan.id = santri.angkatan_id');
-        $this->db->join('users as wali_user', 'wali_user.id = santri.wali_user_id');
+        $this->db->join('kelas', 'kelas.id = santri.kelas_id', 'left');
+        $this->db->join('angkatan', 'angkatan.id = santri.angkatan_id', 'left');
+        $this->db->join('users as wali_user', 'wali_user.id = santri.wali_user_id', 'left');
         $data['santri'] = $this->db->get()->result();
         $this->render('keuangan/santri/index', $data);
     }
