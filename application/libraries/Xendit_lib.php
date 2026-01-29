@@ -18,7 +18,7 @@ class Xendit_lib
     /**
      * Create an Invoice using Xendit
      */
-    public function create_invoice($external_id, $amount, $payer_email, $description)
+    public function create_invoice($external_id, $amount, $payer_email, $description, $redirect_url = '')
     {
         $url = 'https://api.xendit.co/v2/invoices';
 
@@ -30,6 +30,11 @@ class Xendit_lib
             'should_send_email' => true,
             'currency' => 'IDR'
         ];
+
+        if ($redirect_url) {
+            $data['success_redirect_url'] = $redirect_url;
+            $data['failure_redirect_url'] = $redirect_url;
+        }
 
         return $this->_send_request($url, 'POST', $data);
     }

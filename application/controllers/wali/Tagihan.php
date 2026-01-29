@@ -152,7 +152,8 @@ class Tagihan extends MY_Controller
             $external_id,
             $tagihan->nominal_akhir,
             $tagihan->email ?: 'wali@pesantren.com',
-            $description
+            $description,
+            base_url('wali/tagihan')
         );
 
         if ($response['status']) {

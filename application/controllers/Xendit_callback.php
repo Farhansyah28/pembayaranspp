@@ -25,7 +25,12 @@ class Xendit_callback extends CI_Controller
         $raw_json = file_get_contents('php://input');
         $payload = json_decode($raw_json, true);
 
+        // Debug Logging
+        $log_data = "[" . date('Y-m-d H:i:s') . "] Callback received: " . $raw_json . "\n";
+        file_put_contents('./xendit_debug.txt', $log_data, FILE_APPEND);
+
         if (!$payload) {
+            file_put_contents('./xendit_debug.txt', "[" . date('Y-m-d H:i:s') . "] Error: Invalid Payload\n", FILE_APPEND);
             header('HTTP/1.1 400 Bad Request');
             echo 'Invalid Payload';
             return;
@@ -40,6 +45,8 @@ class Xendit_callback extends CI_Controller
                 $tagihan_id = $parts[1];
                 $amount = $payload['amount'];
                 $payment_channel = isset($payload['payment_channel']) ? $payload['payment_channel'] : 'XENDIT';
+
+                file_put_contents('./xendit_debug.txt', "[" . date('Y-m-d H:i:s') . "] Processing Tagihan ID: $tagihan_id, Amount: $amount\n", FILE_APPEND);
 
                 // Start Transaction
                 $this->db->trans_start();
@@ -68,9 +75,15 @@ class Xendit_callback extends CI_Controller
                         'status' => $new_status,
                         'xendit_external_id' => $external_id
                     ]);
+
+                    file_put_contents('./xendit_debug.txt', "[" . date('Y-m-d H:i:s') . "] Success: Status updated to $new_status\n", FILE_APPEND);
+                } else {
+                    file_put_contents('./xendit_debug.txt', "[" . date('Y-m-d H:i:s') . "] Skip: Tagihan not found or already LUNAS\n", FILE_APPEND);
                 }
 
                 $this->db->trans_complete();
+            } else {
+                file_put_contents('./xendit_debug.txt', "[" . date('Y-m-d H:i:s') . "] Error: Invalid external_id format\n", FILE_APPEND);
             }
         }
 
