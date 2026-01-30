@@ -65,13 +65,15 @@
                             </div>
                         <?php elseif ($t->status == 'BELUM_BAYAR'): ?>
                             <div class="flex flex-col space-y-2">
-                                <a href="<?= base_url('wali/tagihan/bayar_online/' . $t->id) ?>"
-                                    class="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition shadow-sm">
-                                    💳 Bayar Online (VA/QRIS)
-                                </a>
+                                <?php if ($xendit_status === 'ENABLED'): ?>
+                                    <a href="<?= base_url('wali/tagihan/bayar_online/' . $t->id) ?>"
+                                        class="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition shadow-sm">
+                                        💳 Bayar Online (VA/QRIS)
+                                    </a>
+                                <?php endif; ?>
                                 <a href="<?= base_url('wali/tagihan/upload_bukti/' . $t->id) ?>"
                                     class="inline-flex items-center justify-center px-4 py-2 bg-blue-600/10 hover:bg-blue-600/20 text-blue-700 text-xs font-bold rounded-xl transition border border-blue-200">
-                                    Atau Upload Bukti
+                                    <?= ($xendit_status === 'ENABLED') ? 'Atau Upload Bukti' : 'Upload Bukti Transfer' ?>
                                 </a>
                             </div>
                         <?php else: ?>
@@ -131,13 +133,15 @@
                 </div>
             <?php elseif ($t->status == 'BELUM_BAYAR'): ?>
                 <div class="flex flex-col space-y-3">
-                    <a href="<?= base_url('wali/tagihan/bayar_online/' . $t->id) ?>"
-                        class="w-full flex items-center justify-center py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl transition shadow-lg shadow-indigo-200">
-                        💳 Bayar Online (VA/QRIS)
-                    </a>
+                    <?php if ($xendit_status === 'ENABLED'): ?>
+                        <a href="<?= base_url('wali/tagihan/bayar_online/' . $t->id) ?>"
+                            class="w-full flex items-center justify-center py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl transition shadow-lg shadow-indigo-200">
+                            💳 Bayar Online (VA/QRIS)
+                        </a>
+                    <?php endif; ?>
                     <a href="<?= base_url('wali/tagihan/upload_bukti/' . $t->id) ?>"
                         class="w-full flex items-center justify-center py-3 bg-white text-indigo-700 font-bold rounded-xl transition border-2 border-indigo-50">
-                        Atau Upload Bukti Manual
+                        <?= ($xendit_status === 'ENABLED') ? 'Atau Upload Bukti Manual' : 'Upload Bukti Transfer Manual' ?>
                     </a>
                 </div>
             <?php else: ?>

@@ -24,6 +24,10 @@ class Tagihan extends MY_Controller
         $this->db->order_by('tagihan_spp.bulan', 'DESC');
         $data['tagihan'] = $this->db->get()->result();
 
+        // Get Xendit status
+        $xendit_setting = $this->db->where('h_key', 'xendit_status')->get('pengaturan')->row();
+        $data['xendit_status'] = $xendit_setting ? $xendit_setting->h_value : 'DISABLED';
+
         $this->render('wali/tagihan/index', $data);
     }
 
@@ -124,6 +128,13 @@ class Tagihan extends MY_Controller
 
     public function bayar_online($tagihan_id)
     {
+        // Check if Xendit is enabled
+        $xendit_setting = $this->db->where('h_key', 'xendit_status')->get('pengaturan')->row();
+        if (!$xendit_setting || $xendit_setting->h_value === 'DISABLED') {
+            $this->session->set_flashdata('error', 'Fitur Pembayaran Online sedang dinonaktifkan.');
+            redirect('wali/tagihan');
+        }
+
         $this->load->library('xendit_lib');
 
         // 1. Get Tagihan Data

@@ -25,6 +25,18 @@ class Pengaturan extends MY_Controller
         $this->db->update('pengaturan', ['h_value' => $alamat], ['h_key' => 'alamat_pesantren']);
         $this->db->update('pengaturan', ['h_value' => $telepon], ['h_key' => 'telepon_pesantren']);
 
+        // Update Xendit Settings
+        $xendit_status = $this->input->post('xendit_status');
+        $xendit_secret = $this->input->post('xendit_secret_key');
+        $xendit_token = $this->input->post('xendit_callback_token');
+
+        if ($xendit_status)
+            $this->db->update('pengaturan', ['h_value' => $xendit_status], ['h_key' => 'xendit_status']);
+        if ($xendit_secret)
+            $this->db->update('pengaturan', ['h_value' => $xendit_secret], ['h_key' => 'xendit_secret_key']);
+        if ($xendit_token)
+            $this->db->update('pengaturan', ['h_value' => $xendit_token], ['h_key' => 'xendit_callback_token']);
+
         // Handle Logo Upload
         if (!empty($_FILES['logo_pesantren']['name'])) {
             $config['upload_path'] = './uploads/branding/';
